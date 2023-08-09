@@ -9,14 +9,13 @@ import (
 )
 
 type Result struct {
-	State string
+	States []string
 }
 
 func Workflow(ctx workflow.Context, params channels.Params) (result Result, err error) {
-	var res string
 	if err := workflow.SetQueryHandler(ctx, "current_state", func() (Result, error) {
 
-		return Result{State: res}, nil
+		return result, nil
 	}); err != nil {
 		log.Fatal(err)
 	}
@@ -28,28 +27,28 @@ func Workflow(ctx workflow.Context, params channels.Params) (result Result, err 
 	ctx = workflow.WithActivityOptions(ctx, ao)
 
 	// execute getting user information activity
-	p := channels.Params{}
-	if err := workflow.ExecuteActivity(ctx, info.User, p).Get(ctx, &res); err != nil {
+	p := channels.Params{
+		ID: params.ID,
+	}
+	var state string
+	if err := workflow.ExecuteActivity(ctx, info.User, p).Get(ctx, &state); err != nil {
 		return result, err
-	} else {
-		p.ID = res
 	}
 
 	// execute notifications
 	notifiers := []any{
 		channels.Email,
-		channels.Android,
-		channels.IOs,
-		channels.Web,
+		channels.Mobile,
 	}
 
 	for _, notifier := range notifiers {
-		err := workflow.ExecuteActivity(ctx, notifier, p).Get(ctx, &res)
-
+		var state string
+		err := workflow.ExecuteActivity(ctx, notifier, p).Get(ctx, &state)
 		if err != nil {
-			return Result{res}, err
+
+			return result, err
 		}
+		result.States = append(result.States, state)
 	}
-	result.State = p.ID
 	return
 }

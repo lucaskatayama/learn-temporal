@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"github.com/lucaskatayama/learn-temporal/examples/notification/pkg/channels"
-	"github.com/lucaskatayama/learn-temporal/examples/notification/pkg/notification"
 	"go.temporal.io/sdk/client"
 	"log"
 	"time"
@@ -22,7 +21,9 @@ func main() {
 		TaskQueue: "notification",
 	}
 
-	we, err := c.ExecuteWorkflow(context.Background(), workflowOptions, notification.Workflow, channels.Params{})
+	we, err := c.ExecuteWorkflow(context.Background(), workflowOptions, "HelloWorld", channels.Params{
+		ID: time.Now().Format(time.RFC3339),
+	})
 	if err != nil {
 		log.Fatalln("Unable to execute workflow", err)
 	}

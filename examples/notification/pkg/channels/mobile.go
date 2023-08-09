@@ -9,13 +9,13 @@ import (
 	"time"
 )
 
-func Android(ctx context.Context, params Params) (string, error) {
+func Mobile(ctx context.Context, params Params) (string, error) {
 	go func() {
 		activityInfo := activity.GetInfo(ctx)
 		taskToken := activityInfo.TaskToken
 		log.Println("email sent")
 		temporalClient, _ := client.Dial(client.Options{})
-
+		time.Sleep(3 * time.Second)
 		// Complete the Activity.
 		temporalClient.CompleteActivity(context.Background(), taskToken, fmt.Sprintf("email %s", time.Now().Format(time.RFC3339Nano)), nil)
 	}()

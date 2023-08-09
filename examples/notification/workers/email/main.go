@@ -6,6 +6,7 @@ import (
 	"github.com/lucaskatayama/learn-temporal/examples/notification/pkg/notification"
 	"go.temporal.io/sdk/client"
 	"go.temporal.io/sdk/worker"
+	"go.temporal.io/sdk/workflow"
 	"log"
 )
 
@@ -19,13 +20,13 @@ func main() {
 
 	w := worker.New(c, "notification", worker.Options{})
 
-	w.RegisterWorkflow(notification.Workflow)
-	//w.RegisterWorkflow(notify.Workflow)
+	w.RegisterWorkflowWithOptions(notification.Workflow, workflow.RegisterOptions{
+		Name:                          "notification.Workflow",
+		DisableAlreadyRegisteredCheck: true,
+	})
 	w.RegisterActivity(info.User)
 	w.RegisterActivity(channels.Email)
-	w.RegisterActivity(channels.Web)
-	w.RegisterActivity(channels.Android)
-	w.RegisterActivity(channels.IOs)
+	w.RegisterActivity(channels.Mobile)
 
 	err = w.Run(worker.InterruptCh())
 	if err != nil {
