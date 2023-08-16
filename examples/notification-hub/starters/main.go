@@ -2,7 +2,7 @@ package main
 
 import (
 	"context"
-	"github.com/lucaskatayama/learn-temporal/examples/notification/pkg/channels"
+	"github.com/lucaskatayama/learn-temporal/examples/notification-hub/workflows"
 	"go.temporal.io/sdk/client"
 	"log"
 	"time"
@@ -21,8 +21,10 @@ func main() {
 		TaskQueue: "notification",
 	}
 
-	we, err := c.ExecuteWorkflow(context.Background(), workflowOptions, "HelloWorld", channels.Params{
-		ID: time.Now().Format(time.RFC3339),
+	we, err := c.ExecuteWorkflow(context.Background(), workflowOptions, workflows.NotificationWorkflow, workflows.Event{
+		ID:     "123",
+		Evt:    "Done something",
+		UserID: "123",
 	})
 	if err != nil {
 		log.Fatalln("Unable to execute workflow", err)
@@ -30,16 +32,4 @@ func main() {
 
 	log.Println("Started workflow", "WorkflowID", we.GetID(), "RunID", we.GetRunID())
 
-	// Synchronously wait for the workflow completion.
-
-	q, err := c.QueryWorkflow(context.Background(), "my id", we.GetRunID(), "current_state")
-	if err != nil {
-		log.Fatalln(err)
-	}
-	var result string
-	err = q.Get(&result)
-	if err != nil {
-		log.Fatalln("Unable get workflow result", err)
-	}
-	log.Println("Workflow result:", result)
 }
