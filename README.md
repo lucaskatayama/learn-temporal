@@ -24,7 +24,7 @@ $ open http://localhost:8233
 
 ## Examples
 
-- [Notification](./examples/notification/README.md)
+- [Notification](./examples/notification-hub/README.md)
 
 ## References
 
