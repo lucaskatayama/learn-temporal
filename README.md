@@ -25,3 +25,7 @@ $ open http://localhost:8233
 ## Examples
 
 - [Notification](./examples/notification/README.md)
+
+## References
+
+- [Temporal Golang Samples](https://github.com/temporalio/samples-go/)
